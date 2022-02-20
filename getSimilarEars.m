@@ -1,5 +1,8 @@
 function simIndex = getSimilarEars(leftRef, rightRef)
 % GETSIMILAREARS Get similar ears from scanned ear list
+% simIndex = getSimilarEars(leftRef, rightRef)
+% leftRef = left reference image
+% rightRef = right reference image
 % 1. Get top N ssim() results between leftRef and leftEarScans
 % 2. Get top N ssim() results between rightRef and rightEarScans
 % 3. Get the intersection of 1 and 2
@@ -22,7 +25,7 @@ load ear_scans.mat ear_scans
     end
 
     % Get Top 5 LEFT
-    [~,ind1] = maxk(lrank,N);
+    [~,topLeft] = maxk(lrank,N)
 
     % Get similarity index of scanned image
     % with respect to reference image RIGHT
@@ -35,18 +38,17 @@ load ear_scans.mat ear_scans
     end
 
     % Get Top 5 RIGHT
-    [~,ind2] = maxk(rrank,N);
+    [~,topRight] = maxk(rrank,N)
 
     % Get the Intersection
-    simIndex = intersect(ind1, ind2);
+    simIndex = intersect(topLeft, topRight);
     
     % If no intersection then choose 2 each from Left and Right
     if isempty(simIndex)
         disp('No intersection found, getting nearest scans.');
-        simIndex = [ind1(1:2) ind2(1:2)];
+        simIndex = [topLeft(1:2) topRight(1:2)];
     end
     
     % Display number of similar ears found
     fprintf('getSimilarEars | Found: %d match/es\n',length(simIndex));
 end
-

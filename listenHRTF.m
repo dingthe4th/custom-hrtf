@@ -1,7 +1,9 @@
 function [soundOutput, leftFilter, rightFilter] = listenHRTF(soundInputName, hrtf, sr,isListen)
 % LISTENHRTF Returns soundOutput based from input sound and hrtf values
-% and also left and right filters for requency response
+% and also left and right filters for frequency response
+% [soundOutput, leftFilter, rightFilter] = listenHRTF(soundInputName, hrtf, sr,isListen)
 % sr is sample rate
+% isListen is bool if you want to listen to the output sound
 
     % Display message
     disp('listenHRTF | Playing sound wrt new HRTF...');

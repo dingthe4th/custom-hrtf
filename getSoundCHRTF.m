@@ -5,8 +5,9 @@ function soundOutput = getSoundCHRTF(earsR,earsL,soundInputName,azimuth,elevatio
 %   Get the Match Subject HRTF data
 %   Get new HRTF values
 %   Listen to the sound input based from the generated HRTF
-
-%   ears      -> matrix [left,ear]
+%   soundOutput = getSoundCHRTF(earsR,earsL,soundInputName,azimuth,elevation,type,sr,isListen)
+%   earsR -> right ear input
+%   earsL -> left ear input
 %   soundInputName -> audio input filename
 %   azimuth   -> azimuth (72 azimuths    : [0°, 5°, 10°, …, 355°]) 
 %   Left << 0 << 180 >> 355 >> Right
@@ -15,17 +16,17 @@ function soundOutput = getSoundCHRTF(earsR,earsL,soundInputName,azimuth,elevatio
 %   sr        -> sample rate
 %   isListen  -> play audio? 1 if yes, 0 if you use this just to generate
 
-% Input Images
+%% Input Images
 % Applied some filters to kind of
 % make it similar to the scanned pictures
 % Right
-r = im2double(rgb2gray(imread('realears/earright.png')));
+r = im2double(rgb2gray(imread(earsR)));
 r = imresize(r,[500 500]);           % Resizing
 r = imadjust(r);                     % Adjusting the color scaling
 r = imgaussfilt(r,1);                % Blurring a bit
 r = medfilt2(r,'symmetric'); % Cleaning some noise
 % Left, with same effects applied
-l = im2double(rgb2gray(imread('realears/earleft.png')));
+l = im2double(rgb2gray(imread(earsL)));
 l = imresize(l,[500 500]);
 l = imadjust(l);
 l = imgaussfilt(l,1);
@@ -38,26 +39,44 @@ l = im2double(edge(l,'Roberts'));
 % Show figure of ears
 figure('Name','LBYCPA4 Bayeta Tupal Project')
 subplot(3,2,1)
-imshow(l)
-title('Left Ear Input')
+imshowpair(l,r,'montage')
+title('Left/Right Ear Inputs')
 
+%% Calculate the Interaural Time Difference (ITD)
+% Convert azimuth from 360->180 convention
+AZrange360 = 0:5:355;
+AZrange180 = linspace(-90,90,72);
+AZindex    = AZrange360==azimuth;
+AZnew      = (AZrange180(AZindex));
+
+% hr, c values came from
+% https://www.researchgate.net/publication/247930825_Under-explored_dimensions_in_spatial_sound
+% formula for itd is also from the same source
+hr = .0875;  % head radius assumption, in m
+c =  340;  % Approx speed of sound in m/s
+itd = hr/c * (AZnew + sin(AZnew)) * 1000; % ms
+
+% Plot the ITD
 subplot(3,2,2)
-imshow(r)
-title('Right Ear Input')
+yline(abs(itd)) % Line graph
+xlim([0 355]);  % X boundary (Azimuth values)
+ylim([0 30]);   % Time in milliseconds
+title("Interaural Time Difference is " + abs(itd) + " ms")
+xlabel('Azimuth'); ylabel('ITD (ms)');
 
-% Get Ear Scans
+%% Get Ear Scans
 getEarScans();
 
-% Get Match Indices of Match Subject Ears wrt to input images
+%% Get Match Indices of Match Subject Ears wrt to input images
 matchIndex = getSimilarEars(l,r);
 
-% Get the Match Subject HRTF data
+%% Get the Match Subject HRTF data
 hrtf_list = getMatchSubjects(matchIndex,type);
 
-% Get new HRTF values
+%% Get new HRTF values
 new_hrtf = getNewHRTF(hrtf_list,azimuth,elevation);
 
-% Listen to the sound input based from the generated HRTF
+%% Listen to the sound input based from the generated HRTF
 [soundOutput, leftFilter, rightFilter] = listenHRTF(soundInputName, new_hrtf, sr, isListen);
 
 % Frequency Response
@@ -76,7 +95,7 @@ xlabel('Normalized Frequency (\times\pi rad/sample)')
 ylabel('Magnitude (dB)')
 
 
-% Plot HRIR
+%% Plot HRIR
 c = permute(new_hrtf, [3 2 1]); % Swap first and third column  (for plotting)
 d = c(:,1)';
 e = c(:,2)';
@@ -95,7 +114,7 @@ legend('left', 'right')
 % Plot audio (left/right)
 t0 = 0: 1/sr : (length(soundOutput)-1)/sr;
 
-% Flag on which channel has lounder output
+% Flag on which channel has louder output
 left_flag  = max(soundOutput(:,1));
 right_flag = max(soundOutput(:,2));
 
@@ -127,7 +146,7 @@ end
     % when called with audiowrite
     soundOutput = soundOutput ./ max(abs(soundOutput));
    
-    % Save
+    %% Save
     outFileType  = '.wav'; % Change this if you want
     % Format soundfilename_AZXX_ELYY_TYPE.type'
     % where XX, YY are values
@@ -136,4 +155,3 @@ end
     audiowrite(outFileName, soundOutput, sr);
     fprintf('getSoundCHRTF | Output %s is saved at directory.\n',outFileName);
 end
-

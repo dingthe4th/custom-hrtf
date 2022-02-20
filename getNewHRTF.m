@@ -1,7 +1,9 @@
 function new_hrtf = getNewHRTF(hrtf_list, azimuth, elevation)
 % GETNEWHRTF Gets personalized hrtf from hrtf_list
+% new_hrtf = getNewHRTF(hrtf_list, azimuth, elevation)
 % hrtf_list comes from getMatchSubjects
 % that gets HRTFs of matched subjects
+% azimuth and elevation are user inputs
 
     % Uses interpolateHRTF
     % that needs

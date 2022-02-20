@@ -1,5 +1,6 @@
 function hrtf_lists = getMatchSubjects(matchIndex, type)
 % GETMATCHSUBJECTS Get the .sofa files of the match indices
+% hrtf_lists = getMatchSubjects(matchIndex, type)
 % Returns the HRTF lists with index from
 % matchIndex. For example if matchIndex = [1 2 3], it will
 % return Subject1,2,3 files contained in a list
