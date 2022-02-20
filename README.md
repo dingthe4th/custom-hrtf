@@ -42,18 +42,18 @@ Saves the file in the format:
 Format:  soundfilename_AZXX_ELYY_TYPE.type'
 Example: siren.mp3_AZ90_EL0_DFEQ.wav
 
->getEarScans();
+-getEarScans();
 Read all scanned left/right ear images. Generating this is done by opening all .ply files from [2] and load it in Blender.
 Next is to crop the left/right ear images with methods listed in [10]. 
->getSimilarEars();
+-getSimilarEars();
 Get similar ears from scanned ear list. 
 1. Get top N ssim() results between leftRef and leftEarScans (N=5)
 2. Get top N ssim() results between rightRef and rightEarScans
 3. Get the intersection of 1 and 2
 4. If no intersection, get Top 2 from both
->getMatchSubjects();
+-getMatchSubjects();
 Get the .sofa files of the match indices from the similar ear index.
->getNewHRTF();
+-getNewHRTF();
 Gets personalized hrtf from hrtf_list
->listenHRTF();
+-listenHRTF();
 Returns soundOutput based from input sound and hrtf values
