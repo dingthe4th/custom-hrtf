@@ -14,7 +14,7 @@ Clone this project, and serve it as your workspace.
 
 
 ## Testing
-###test_customHRTF
+### test_customHRTF
 test function. Just run this to check if the project is working. This calls all the function mentioned below.
 ![image](https://user-images.githubusercontent.com/46555394/154861070-67747ced-9308-4a85-b545-e75322f8c1ab.png)
 
